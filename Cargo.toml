@@ -1,0 +1,11 @@
+[package]
+authors = ["mcarton <cartonmartin+git@gmail.com>"]
+name = "naughty-strings"
+version = "0.1.0"
+
+[[bin]]
+name = "make-lib"
+path = "src/bin/make-lib.rs"
+
+[dependencies]
+rustc-serialize = "0.3"
