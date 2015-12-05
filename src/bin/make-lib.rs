@@ -30,7 +30,7 @@ fn main() {
 
     let mut output = File::create("src/lib.rs").unwrap();
     writeln!(output, "/// Big list of naughty strings").unwrap();
-    writeln!(output, "pub const BLNS: [&'static str; {}] = [", blns.len()).unwrap();
+    writeln!(output, "pub const BLNS: &'static [&'static str] = &[").unwrap();
 
     for ns in blns {
         writeln!(output, "    {:?},", ns).unwrap();

@@ -1,5 +1,5 @@
 /// Big list of naughty strings
-pub const BLNS: [&'static str; 484] = [
+pub const BLNS: &'static [&'static str] = &[
     "",
     "undefined",
     "undef",
