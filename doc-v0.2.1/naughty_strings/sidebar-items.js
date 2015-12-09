@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["BLNS","Big list of naughty strings."]]});

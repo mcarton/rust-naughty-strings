@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["INVALID_EMAIL","Examples of invalid email addresses."],["NULL_BYTE_REPR","Examples of representations of the null byte."],["UNIX","a wide sample of malicious input for unix-like targets"],["VALID_EMAIL","Examples of valid email addresses."],["WINDOWS","a wide sample of malicious input for windows targets"],["XPLATFORM",""]]});
