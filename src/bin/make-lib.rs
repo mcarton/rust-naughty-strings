@@ -29,13 +29,24 @@ fn main() {
     let blns : Vec<String> = json::decode(&blns).unwrap();
 
     let mut output = File::create("src/lib.rs").unwrap();
-    writeln!(output, "/// Big list of naughty strings").unwrap();
-    writeln!(output, "pub const BLNS: &'static [&'static str] = &[").unwrap();
+
+    writeln!(output,
+        "/// Big list of naughty strings, implementation detail.\n\
+         /// This is a workaround for rustdoc, which does not escape correctly\n\
+         /// the string literal and exposes naughty javascript.\n\
+         const BLNS_IMPL: &'static [&'static str] = &["
+    ).unwrap();
 
     for ns in blns {
         writeln!(output, "    {:?},", ns).unwrap();
     }
 
-    write!(output, "];").unwrap();
+    write!(output,
+        "];\n\
+        \n\
+        /// Big list of naughty strings.\n\
+        pub const BLNS: &'static [&'static str] = BLNS_IMPL;"
+    ).unwrap();
+
 
 }

@@ -1,5 +1,7 @@
-/// Big list of naughty strings
-pub const BLNS: &'static [&'static str] = &[
+/// Big list of naughty strings, implementation detail.
+/// This is a workaround for rustdoc, which does not escape correctly
+/// the string literal and exposes naughty javascript.
+const BLNS_IMPL: &'static [&'static str] = &[
     "",
     "undefined",
     "undef",
@@ -485,3 +487,6 @@ pub const BLNS: &'static [&'static str] = &[
     "The quic\u{8}\u{8}\u{8}\u{8}\u{8}\u{8}k brown fo\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}\u{7}x... [Beeeep]",
     "Power\u{644}\u{64f}\u{644}\u{64f}\u{635}\u{651}\u{628}\u{64f}\u{644}\u{64f}\u{644}\u{635}\u{651}\u{628}\u{64f}\u{631}\u{631}\u{64b} \u{963} \u{963}h \u{963} \u{963}\u{5197}",
 ];
+
+/// Big list of naughty strings.
+pub const BLNS: &'static [&'static str] = BLNS_IMPL;
