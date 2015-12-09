@@ -1,6 +1,5 @@
 # rust-naughty-strings
-Rust binding of [minimaxir's Big List Of Naughty
-Strings](https://github.com/minimaxir/big-list-of-naughty-strings)
+Rust binding of [minimaxir's Big List Of Naughty Strings][minimaxir-blns].
 
 The crate only provides one array `naughty_strings::BLNS : &'static [&'static str]`:
 ```rust
@@ -14,14 +13,21 @@ fn main() {
 
 ```
 
-Note that because those strings are so naughty, I can't even upload a `rustdoc`
-generated documentation: `rustdoc` does not escape the various `<script>` in
-the list and the doc is unusable.
+## *crates.io*
+The crate [is on *crates.io*][crate].
 
-The crate [is on *crates.io*](https://crates.io/crates/naughty-strings).
+## Documentation
+The documentation is available [here][doc].
+
+Note that because those strings are so naughty, `rustdoc` did not handle the
+documentation of the crate correctly!
 
 ## Generate the library
 The library is generated with `cargo run --bin make-lib [PATH-TO-BLNS-REPO]`
-(`PATH-TO-BLNS-REPO` defaults to
-[minimaxir's repo](https://github.com/minimaxir/big-list-of-naughty-strings.git)).
+(`PATH-TO-BLNS-REPO` defaults to [minimaxir's repo][PATH-TO-BLNS-REPO]).
 This generates the sole file [*src/lib.rs*](src/lib.rs).
+
+[PATH-TO-BLNS-REPO]: https://github.com/minimaxir/big-list-of-naughty-strings.git
+[crate]: https://crates.io/crates/naughty-strings
+[doc]: https://mcarton.github.io/rust-naughty-strings/doc-latest/naughty_strings/
+[minimaxir-blns]: https://github.com/minimaxir/big-list-of-naughty-strings
