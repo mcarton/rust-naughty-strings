@@ -6,7 +6,7 @@ keywords = ["blns", "naughty-strings", "test"]
 license = "MIT OR Apache-2.0"
 name = "naughty-strings"
 repository = "https://github.com/mcarton/rust-naughty-strings"
-version = "0.2.1"
+version = "0.2.2"
 
 [[bin]]
 name = "make-lib"
