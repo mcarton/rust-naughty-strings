@@ -13,4 +13,4 @@ name = "make-lib"
 path = "src/bin/make-lib.rs"
 
 [dependencies]
-rustc-serialize = "0.3"
+serde_json = "1"

@@ -1,6 +1,4 @@
-extern crate rustc_serialize;
-
-use rustc_serialize::json;
+extern crate serde_json;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
@@ -18,15 +16,13 @@ fn main() {
                        .status().unwrap();
 
     let blns = {
-        let mut blns = File::open(out_dir.join("blns.json")).unwrap();
-        let mut buffer = String::new();
-        blns.read_to_string(&mut buffer).unwrap();
-        buffer
+        let blns = File::open(out_dir.join("blns.json")).unwrap();
+        std::io::BufReader::new(blns)
     };
 
     std::fs::remove_dir_all(out_dir).unwrap();
 
-    let blns : Vec<String> = json::decode(&blns).unwrap();
+    let blns : Vec<String> = serde_json::from_reader(blns).unwrap();
 
     let mut output = File::create("src/lib.rs").unwrap();
 
