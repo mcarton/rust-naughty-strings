@@ -11,7 +11,7 @@ const NAUGHTY_REPO_URL : &'static str = &"https://github.com/minimaxir/big-list-
 fn main() {
     let path = std::env::args().nth(1).unwrap_or(NAUGHTY_REPO_URL.into());
 
-    let out_dir = std::env::var("OUT_DIR").unwrap();
+    let out_dir = std::env::var("OUT_DIR").unwrap_or_else(|_| "/tmp".into());
     let out_dir = Path::new(&out_dir).join("big-list-of-naughty-strings");
 
     Command::new("git").args(&["clone", &path, out_dir.to_str().unwrap()])
