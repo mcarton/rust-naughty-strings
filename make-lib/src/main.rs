@@ -1,0 +1,309 @@
+use std::collections::HashSet;
+use std::error::Error;
+use std::fmt::Write as _;
+use std::fs;
+use std::path::Path;
+use std::process::Command;
+
+const NAUGHTY_REPO_URL: &str = "https://github.com/minimaxir/big-list-of-naughty-strings.git";
+
+/// A section of `blns.txt`.
+struct Category {
+    name: String,
+    description: String,
+    strings: Vec<String>,
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let repo = std::env::args()
+        .nth(1)
+        .unwrap_or_else(|| NAUGHTY_REPO_URL.into());
+
+    let categories = parse(&fetch_blns_txt(&repo)?)?;
+
+    let output = Path::new(env!("CARGO_MANIFEST_DIR")).join("../src/blns.rs");
+    fs::write(&output, render(&categories)?)?;
+    println!(
+        "Wrote {} strings in {} categories to {}",
+        categories.iter().map(|c| c.strings.len()).sum::<usize>(),
+        categories.len(),
+        output.display()
+    );
+
+    Ok(())
+}
+
+/// Clones `repo` into a temporary directory and returns the contents of its `blns.txt`.
+///
+/// `blns.txt` is the canonical list; upstream's `blns.json` is generated from it
+/// and has not been regenerated since the 2021 updates.
+fn fetch_blns_txt(repo: &str) -> Result<String, Box<dyn Error>> {
+    let out_dir = std::env::var_os("OUT_DIR")
+        .map(Into::into)
+        .unwrap_or_else(std::env::temp_dir)
+        .join(format!(
+            "big-list-of-naughty-strings-{}",
+            std::process::id()
+        ));
+
+    let status = Command::new("git")
+        .args(["clone", "--quiet", "--depth", "1", repo])
+        .arg(&out_dir)
+        .status()?;
+
+    // Read before cleaning up so the file is not deleted while still open.
+    let blns = if status.success() {
+        fs::read_to_string(out_dir.join("blns.txt")).map_err(Into::into)
+    } else {
+        Err(format!("`git clone {}` failed: {}", repo, status).into())
+    };
+
+    if out_dir.exists() {
+        fs::remove_dir_all(&out_dir)?;
+    }
+
+    blns
+}
+
+/// Splits `blns.txt` into its categories.
+///
+/// The strings are extracted the same way upstream's `scripts/txt_to_json.py`
+/// does: blank lines and `#` comments are skipped, and the empty string, which
+/// the file cannot express, comes first. It is put in the first category.
+///
+/// A category starts with a header like
+///
+/// ```text
+/// #    Title
+/// #
+/// #    Description, possibly spanning
+/// #    several lines
+/// ```
+///
+/// preceded by a blank line or the start of the file. Other comments are notes
+/// within a category.
+fn parse(txt: &str) -> Result<Vec<Category>, Box<dyn Error>> {
+    let lines: Vec<&str> = txt.lines().collect();
+    let mut categories: Vec<Category> = Vec::new();
+    for (i, &line) in lines.iter().enumerate() {
+        let after_blank = i == 0 || lines[i - 1].is_empty();
+        let before_separator = lines.get(i + 1).and_then(|&l| comment(l)) == Some("");
+
+        match comment(line) {
+            Some(name) if after_blank && before_separator && !name.is_empty() => {
+                let description = lines[i + 2..]
+                    .iter()
+                    .map_while(|&l| comment(l).filter(|c| !c.is_empty()))
+                    .collect::<Vec<_>>()
+                    .join(" ");
+
+                categories.push(Category {
+                    name: name.into(),
+                    description: description.split_whitespace().collect::<Vec<_>>().join(" "),
+                    strings: Vec::new(),
+                });
+            }
+            Some(_) => {}
+            None if line.is_empty() => {}
+            None => categories
+                .last_mut()
+                .ok_or("blns.txt has strings before its first category")?
+                .strings
+                .push(line.into()),
+        }
+    }
+
+    categories
+        .first_mut()
+        .ok_or("blns.txt has no categories")?
+        .strings
+        .insert(0, String::new());
+
+    Ok(categories)
+}
+
+/// Returns the text of a `#` comment line.
+fn comment(line: &str) -> Option<&str> {
+    line.strip_prefix('#').map(str::trim)
+}
+
+/// Turns a category name into a constant name, e.g. `MSDOS/Windows Special
+/// Filenames` into `MSDOS_WINDOWS_SPECIAL_FILENAMES`.
+fn const_name(name: &str) -> String {
+    name.split(|c: char| !c.is_ascii_alphanumeric())
+        .filter(|w| !w.is_empty())
+        .map(str::to_ascii_uppercase)
+        .collect::<Vec<_>>()
+        .join("_")
+}
+
+/// Wraps bare URLs in `<>` so rustdoc links them instead of warning.
+fn link_urls(text: &str) -> String {
+    text.split(' ')
+        .map(|word| match word.find("http") {
+            Some(start) => {
+                let url = word[start..].trim_end_matches(|c| ")]>.,;".contains(c));
+                let end = start + url.len();
+                format!("{}<{}>{}", &word[..start], url, &word[end..])
+            }
+            None => word.into(),
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+fn render(categories: &[Category]) -> Result<String, Box<dyn Error>> {
+    let mut output = String::from(
+        "// @generated by make-lib from the Big List of Naughty Strings. Do not edit.\n\
+         \n\
+         /// Big list of naughty strings.\n\
+         pub const BLNS: &[&str] = &[\n",
+    );
+    for ns in categories.iter().flat_map(|c| &c.strings) {
+        writeln!(output, "    {:?},", ns)?;
+    }
+    output.push_str("];\n");
+
+    let mut names = HashSet::new();
+    let const_names = categories
+        .iter()
+        .map(|c| {
+            let name = const_name(&c.name);
+            match names.insert(name.clone()) {
+                true => Ok(name),
+                false => Err(format!("duplicate category constant {}", name)),
+            }
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+
+    output.push_str(
+        "\n\
+         /// All categories, in list order. Their strings, concatenated, are [`BLNS`].\n\
+         pub const CATEGORIES: &[Category] = &[\n",
+    );
+    for name in &const_names {
+        writeln!(output, "    categories::{},", name)?;
+    }
+    output.push_str(
+        "];\n\
+         \n\
+         /// The categories of the list, one constant each.\n\
+         pub mod categories {\n\
+         \x20   use crate::Category;\n",
+    );
+    for (category, name) in categories.iter().zip(&const_names) {
+        writeln!(output, "\n    /// {}", category.name)?;
+        if !category.description.is_empty() {
+            writeln!(
+                output,
+                "    ///\n    /// {}",
+                link_urls(&category.description)
+            )?;
+        }
+        writeln!(output, "    pub const {}: Category = Category {{", name)?;
+        writeln!(output, "        name: {:?},", category.name)?;
+        writeln!(output, "        description: {:?},", category.description)?;
+        writeln!(output, "        strings: &[")?;
+        for ns in &category.strings {
+            writeln!(output, "            {:?},", ns)?;
+        }
+        writeln!(output, "        ],\n    }};")?;
+    }
+    output.push_str("}\n");
+
+    Ok(output)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const SAMPLE: &str = "\
+#\tFirst
+#
+#\tFirst description,
+#\tcontinued
+
+one
+
+# A note after a blank line, not followed by a bare `#`.
+two
+#\tAnother note
+#
+#\tthat is not after a blank line
+
+#\tSecond
+#
+#\tSecond description
+#
+#\tA table that is not part of the description
+
+three \t
+";
+
+    #[test]
+    fn parse_splits_categories_at_headers_only() {
+        let categories = parse(SAMPLE).unwrap();
+
+        let names: Vec<&str> = categories.iter().map(|c| c.name.as_str()).collect();
+        assert_eq!(names, ["First", "Second"]);
+        assert_eq!(categories[0].description, "First description, continued");
+        assert_eq!(categories[1].description, "Second description");
+    }
+
+    #[test]
+    fn parse_keeps_strings_verbatim_and_prepends_empty_string() {
+        let categories = parse(SAMPLE).unwrap();
+
+        assert_eq!(categories[0].strings, ["", "one", "two"]);
+        assert_eq!(categories[1].strings, ["three \t"]);
+    }
+
+    #[test]
+    fn parse_rejects_strings_before_first_category() {
+        assert!(parse("orphan\n\n#\tFirst\n#\n\none\n").is_err());
+        assert!(parse("").is_err());
+    }
+
+    #[test]
+    fn const_name_uppercases_and_joins_words() {
+        assert_eq!(
+            const_name("MSDOS/Windows Special Filenames"),
+            "MSDOS_WINDOWS_SPECIAL_FILENAMES"
+        );
+        assert_eq!(
+            const_name("Command Injection (Ruby)"),
+            "COMMAND_INJECTION_RUBY"
+        );
+        assert_eq!(const_name("jinja2 injection"), "JINJA2_INJECTION");
+    }
+
+    #[test]
+    fn link_urls_wraps_urls_without_trailing_punctuation() {
+        assert_eq!(
+            link_urls("(c.f. http://example.org/a.pdf)"),
+            "(c.f. <http://example.org/a.pdf>)"
+        );
+        assert_eq!(
+            link_urls("Credit: https://example.org/x."),
+            "Credit: <https://example.org/x>."
+        );
+        assert_eq!(link_urls("no links here"), "no links here");
+    }
+
+    #[test]
+    fn render_escapes_strings_and_lists_every_category() {
+        let output = render(&parse("#\tQuotes\n#\n\n\"\n\\\n").unwrap()).unwrap();
+
+        assert!(output.contains("    \"\\\"\",\n"));
+        assert!(output.contains("    \"\\\\\",\n"));
+        assert!(output.contains("    categories::QUOTES,\n"));
+        assert!(output.contains("pub const QUOTES: Category = Category {"));
+    }
+
+    #[test]
+    fn render_rejects_colliding_constant_names() {
+        let categories = parse("#\tA-B\n#\n\none\n\n#\tA B\n#\n\ntwo\n").unwrap();
+        assert!(render(&categories).is_err());
+    }
+}

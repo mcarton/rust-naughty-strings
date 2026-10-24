@@ -1,0 +1,27 @@
+name: Upstream
+
+# Fails when the Big List of Naughty Strings changed upstream and src/blns.rs
+# needs regenerating with `cargo run -p make-lib`.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  up-to-date:
+    name: Generated list is up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master as of 2026-10-16
+        with:
+          toolchain: stable
+      - run: cargo run -p make-lib
+      - run: git diff --exit-code src/blns.rs
