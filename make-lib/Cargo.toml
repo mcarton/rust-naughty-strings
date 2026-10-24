@@ -1,0 +1,10 @@
+[package]
+name = "make-lib"
+description = "Generates src/blns.rs of the naughty-strings crate from the upstream list."
+version = "0.0.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+serde_json = "1"

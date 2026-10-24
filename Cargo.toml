@@ -1,16 +1,14 @@
 [package]
 authors = ["mcarton <cartonmartin+git@gmail.com>"]
 description = "The Big List of Naughty Strings is a list of strings which have a high probability of causing issues when used as user-input data."
-documentation = "https://mcarton.github.io/rust-naughty-strings/doc-latest/naughty_strings/index.html"
+documentation = "https://docs.rs/naughty-strings"
+categories = ["development-tools::testing", "no-std"]
 keywords = ["blns", "naughty-strings", "test"]
 license = "MIT OR Apache-2.0"
 name = "naughty-strings"
 repository = "https://github.com/mcarton/rust-naughty-strings"
 version = "0.2.4"
+edition = "2021"
 
-[[bin]]
-name = "make-lib"
-path = "src/bin/make-lib.rs"
-
-[dependencies]
-serde_json = "1"
+[workspace]
+members = ["make-lib"]
